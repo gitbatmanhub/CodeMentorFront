@@ -7,6 +7,9 @@ import { Notfound } from '@/pages/notfound/notfound';
 // import { RegisterComponent } from '@/auth/components/register/register';
 import { Login } from '@/pages/auth/login';
 import { AuthGuard } from '@/auth/guards/auth.guard';
+import { Aprendizajelibre } from '@/pages/empty/aprendizajelibre';
+import { Aprendizajeguiado } from '@/pages/empty/aprendizajeguiado';
+import { Proyectos } from '@/pages/empty/proyectos';
 
 export const appRoutes: Routes = [
     {path: '', component: Landing},
@@ -18,6 +21,10 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: Dashboard },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
+            {path: 'pages', loadChildren: () => import('./app/pages/pages.routes')},
+            {path: 'free', component: Aprendizajelibre},
+            {path: 'guia', component: Aprendizajeguiado},
+            {path: 'proyectos', component: Proyectos },
 
         ],
 
@@ -26,6 +33,7 @@ export const appRoutes: Routes = [
 
 
     { path: 'notfound', component: Notfound },
+
 
     { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
     { path: '**', redirectTo: '/notfound' }
