@@ -32,7 +32,6 @@ export class AuthService {
             }
         }
 
-        console.log('Stored roles:', this.roles);
 
         if (storedUser) {
             try {
@@ -60,18 +59,7 @@ export class AuthService {
     login(credentials: LoginCredentials): Observable<BackendLoginResponse> {
         return this.http.post<BackendLoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
             tap((res) => {
-                const user: UserInterface = {
-                    fullName: res.fullName,
-                    email: res.email,
-                    idUser: res.idUser,
-                };
-                localStorage.setItem('authToken', res.token);
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                localStorage.setItem('userName', user.fullName);
-                localStorage.setItem('roles', JSON.stringify(res.role));
-
-                this.roles = res.role;
-                this.currentUserSubject.next(user);
+               this.setLocalStorageForColab(res)
             }),
             catchError((error) => {
                 console.log(error);
@@ -95,17 +83,7 @@ export class AuthService {
     register(credentials: RegisterCredentials): Observable<BackendLoginResponse> {
         return this.http.post<BackendLoginResponse>(`${this.apiUrl}/register`, credentials).pipe(
             tap((res) => {
-                const user: UserInterface = {
-                    fullName: res.fullName,
-                    email: res.email
-                };
-                localStorage.setItem('authToken', res.token);
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                localStorage.setItem('userName', user.fullName);
-                localStorage.setItem('roles', JSON.stringify(res.role));
-
-                this.roles = res.role;
-                this.currentUserSubject.next(user);
+                this.setLocalStorageForColab(res)
             }),
             catchError((error) => {
                 console.error('Register failed:', error);
@@ -114,16 +92,24 @@ export class AuthService {
         );
     }
 
-    registerColab(credentials: RegisterColab): Observable<BackendLoginResponse> {
-        return this.http.post<BackendLoginResponse>(`${this.apiUrl}/register-colab`, credentials).pipe(
-            tap((res) => {
-                return res;
-            }),
-            catchError((error) => {
-                return throwError(() => error);
-            })
-        );
+
+    setLocalStorageForColab(res: BackendLoginResponse) {
+        const user: UserInterface = {
+            fullName: res.fullName,
+            email: res.email,
+            idUser: res.idUser,
+            encuestado: res.encuesta,
+        };
+        console.log('Login successful, storing user data:', user, 'with roles:', res.role);
+        localStorage.setItem('authToken', res.token);
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('userName', user.fullName);
+        localStorage.setItem('encuestado', String(res.encuesta));
+        localStorage.setItem('roles', JSON.stringify(res.role));
+        this.roles = res.role;
+        this.currentUserSubject.next(user);
     }
+
 
     removeUser(idUsuario: string, idColaborador: string) {
         return this.http.get(`${this.apiUrl}/removeUser/${idUsuario}/${idColaborador}`).pipe(
@@ -179,6 +165,10 @@ export class AuthService {
     isAuthenticated(): boolean {
         const token = this.getToken();
         return !!token && !this.isTokenExpired(token);
+    }
+
+    getEncuestado(): string | null {
+        return localStorage.getItem('encuestado');
     }
 
     getToken(): string | null {

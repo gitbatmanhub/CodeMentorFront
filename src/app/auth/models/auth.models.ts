@@ -6,6 +6,7 @@ export interface UserInterface {
     id?: string;
     role?: string[];
     idUser?: string;
+    encuestado?: boolean;
     idColaborador?: string | null;
 }
 
@@ -15,6 +16,7 @@ export interface BackendLoginResponse {
     token: string;
     role: string[];
     idUser: string;
+    encuesta: boolean;
     codColaborador: string | null;
 }
 
