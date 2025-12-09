@@ -1,12 +1,9 @@
 import { Component } from '@angular/core';
-import { BestSellingWidget } from '@/pages/dashboard/components/bestsellingwidget';
-import { NotificationsWidget } from '@/pages/dashboard/components/notificationswidget';
-import { RecentSalesWidget } from '@/pages/dashboard/components/recentsaleswidget';
-import { RevenueStreamWidget } from '@/pages/dashboard/components/revenuestreamwidget';
+
 import { StatsWidget } from '@/pages/dashboard/components/statswidget';
 
 @Component({
-    selector: 'app-empty',
+    selector: 'app-proyectos',
     standalone: true,
     imports: [
         StatsWidget
@@ -25,4 +22,4 @@ import { StatsWidget } from '@/pages/dashboard/components/statswidget';
         </div>
     `
 })
-export class Empty {}
+export class Proyectos {}
