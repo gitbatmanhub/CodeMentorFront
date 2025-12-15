@@ -16,6 +16,7 @@ import { RadioButton } from 'primeng/radiobutton';
 import { AprendizajeGuiadoService } from '@/pages/service/aprendizaje.guiado.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { QuestionaryService } from '@/pages/service/questionary.service';
 
 interface Option {
     idOption: number;
@@ -163,7 +164,8 @@ export class DialogEncuesta implements OnInit {
 
     constructor(
         private aprendizajeGuiadoService: AprendizajeGuiadoService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private questionaryService: QuestionaryService,
     ) {
         this.encuestaForm = fb.group({
             response1: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
@@ -292,7 +294,16 @@ export class DialogEncuesta implements OnInit {
      * Lógica a ejecutar al finalizar el cuestionario.
      */
     finishQuiz(): void {
-        console.log(this.userAnswers)
+
+        const payload = {
+            answers: this.userAnswers
+        };
+        console.log('Respuestas del usuario:', this.userAnswers);
+        this.questionaryService.sendQuestionary(payload).subscribe(
+            (response) => {
+                console.log('Cuestionario enviado exitosamente:', response);
+            },
+        )
         alert('¡Has completado el cuestionario!');
     }
 }
