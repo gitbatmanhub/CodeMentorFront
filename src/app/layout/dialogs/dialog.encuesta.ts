@@ -17,6 +17,10 @@ import { AprendizajeGuiadoService } from '@/pages/service/aprendizaje.guiado.ser
 import { DialogService } from 'primeng/dynamicdialog';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { QuestionaryService } from '@/pages/service/questionary.service';
+import { finalize } from 'rxjs/operators';
+import { MessageService } from 'primeng/api';
+import { MessageModule } from 'primeng/message';
+import { Toast } from 'primeng/toast';
 
 interface Option {
     idOption: number;
@@ -60,95 +64,117 @@ interface UserAnswer {
         StepPanel,
         RadioButton,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        MessageModule,
+        Toast
     ],
     template: `
+        <p-toast />
         <div class="card flex justify-center">
             <p-stepper [value]="currentStep">
-                <p-step-list>
-                    @for (question of questions; track question.idQuestion; let i = $index) {
-                        <ng-container>
-                            <p-step [value]="i + 1"></p-step>
-                        </ng-container>
-                    }
-                </p-step-list>
+                @if (!isLoading) {
+                    <p-step-list>
+                        @for (question of questions; track question.idQuestion; let i = $index) {
+                            <ng-container>
+                                <p-step [value]="i + 1"></p-step>
+                            </ng-container>
+                        }
+                    </p-step-list>
+                }
+
+
 
                 <p-step-panels>
+                    @if (isLoading) {
+                        <div class="flex flex-col items-center justify-center text-center">
+                            <img src="assets/svg/loading1.svg" alt="Espera..." class="mb-6 w-24" />
+
+                            <p class="text-base">
+                                Estamos creando tu perfil, por favor espera.
+                                <br />
+                                No salgas de esta pantalla.
+                            </p>
+                        </div>
+                    }
+
                     @for (question of questions; track question.idQuestion; let i = $index) {
-                        <ng-container>
-                            <p-step-panel [value]="i + 1">
-                                <ng-template #content let-activateCallback="activateCallback">
-                                    <div class="flex flex-col gap-6 p-4" [style]="{ width: '100%' }">
-                                        <h3 class=" font-bold  dark:text-primary-400">{{ i + 1 }}. {{ question.question_text }}</h3>
-                                        <div class="flex flex-col gap-4">
-                                            <form [formGroup]="encuestaForm" class="">
-                                                @for (option of question.options; track option.idOption) {
-                                                    <div class="flex items-center">
-                                                        <p-radioButton
-                                                            [inputId]="'option_' + option.idOption"
-                                                            [name]="'question_' + question.idQuestion"
-                                                            [value]="option.idOption"
-                                                            (onClick)="selectOption(question.idQuestion, option.idOption)"
-                                                            class="mr-3"
-                                                            formControlName="response{{ i + 1 }}"
-                                                        />
-                                                        <label
-                                                            [for]="'option_' + option.idOption"
-                                                            class="cursor-pointer text-lg p-3 rounded-lg flex-auto
+                        @if (!isLoading) {
+                            <ng-container>
+                                <p-step-panel [value]="i + 1">
+                                    <ng-template #content let-activateCallback="activateCallback">
+                                        <div class="flex flex-col gap-6 p-4" [style]="{ width: '100%' }">
+                                            <h3 class=" font-bold  dark:text-primary-400">{{ i + 1 }}. {{ question.question_text }}</h3>
+                                            <div class="flex flex-col gap-4">
+                                                <form [formGroup]="encuestaForm" class="">
+                                                    @for (option of question.options; track option.idOption) {
+                                                        <div class="flex items-center">
+                                                            <p-radioButton
+                                                                [inputId]="'option_' + option.idOption"
+                                                                [name]="'question_' + question.idQuestion"
+                                                                [value]="option.idOption"
+                                                                (onClick)="selectOption(question.idQuestion, option.idOption)"
+                                                                class="mr-3"
+                                                                formControlName="response{{ i + 1 }}"
+                                                            />
+                                                            <label
+                                                                [for]="'option_' + option.idOption"
+                                                                class="cursor-pointer text-lg p-3 rounded-lg flex-auto
                                                   transition-colors duration-200
                                                   hover:bg-surface-50 dark:hover:bg-surface-800"
-                                                            [ngClass]="{
-                                                                'font-medium text-primary-700 dark:text-primary-300 bg-primary-50/20 dark:bg-primary-900/40 border border-primary-300 dark:border-primary-700': isSelected(
-                                                                    question.idQuestion,
-                                                                    option.idOption
-                                                                )
-                                                            }"
-                                                        >
-                                                            <span class="font-bold mr-2">{{ option.option_label }}:</span>
-                                                            {{ option.option_text }}
-                                                        </label>
-                                                    </div>
-                                                }
-                                            </form>
+                                                                [ngClass]="{
+                                                                    'font-medium text-primary-700 dark:text-primary-300 bg-primary-50/20 dark:bg-primary-900/40 border border-primary-300 dark:border-primary-700': isSelected(
+                                                                        question.idQuestion,
+                                                                        option.idOption
+                                                                    )
+                                                                }"
+                                                            >
+                                                                <span class="font-bold mr-2">{{ option.option_label }}:</span>
+                                                                {{ option.option_text }}
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                </form>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div class="flex pt-6 justify-between">
-                                        @if (i > 0){
-                                            <p-button  label="Atrás" severity="secondary" icon="pi pi-arrow-left" (onClick)="prevStep(activateCallback, i)" />
-                                        }
+                                        <div class="flex pt-6 justify-between">
+                                            @if (i > 0) {
+                                                <p-button label="Atrás" severity="secondary" icon="pi pi-arrow-left" (onClick)="prevStep(activateCallback, i)" />
+                                            }
 
-                                        @if (i === 0){
-                                            <div ></div>
+                                            @if (i === 0) {
+                                                <div></div>
+                                            }
 
-                                        }
+                                            @if (i < totalSteps - 1) {
+                                                <p-button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" [disabled]="!isQuestionAnswered(question.idQuestion)" (onClick)="nextStep(activateCallback, i + 2)" />
+                                            }
 
-                                        @if (i < totalSteps - 1) {
-                                            <p-button label="Siguiente" icon="pi pi-arrow-right" iconPos="right" [disabled]="!isQuestionAnswered(question.idQuestion)" (onClick)="nextStep(activateCallback, i + 2)" />
+                                            @if (i === totalSteps - 1 && !isComplete) {
+                                                <p-button label="Finalizar Cuestionario" icon="pi pi-check" iconPos="right" severity="success" [disabled]="!isQuestionAnswered(question.idQuestion) && !isLoading" (onClick)="finishQuiz()" />
+                                            }
 
-                                        }
+                                            @if (isComplete){
+                                                <p-button label="Ver perfil" icon="pi pi-user" iconPos="right" severity="success" />
+                                            }
 
-                                        @if (i === totalSteps - 1){
-                                            <p-button  label="Finalizar Cuestionario" icon="pi pi-check" iconPos="right" severity="success" [disabled]="!isQuestionAnswered(question.idQuestion)" (onClick)="finishQuiz()" />
-
-                                        }
-
-
-
-                                    </div>
-                                </ng-template>
-                            </p-step-panel>
-                        </ng-container>
+                                                </div>
+                                    </ng-template>
+                                </p-step-panel>
+                            </ng-container>
+                        }
                     }
                 </p-step-panels>
             </p-stepper>
         </div>
     `,
-    providers: [AprendizajeGuiadoService]
+    providers: [AprendizajeGuiadoService, MessageService]
 })
 export class DialogEncuesta implements OnInit {
     questions: Question[] = [];
 
+    isLoading: boolean = false;
+    isComplete: boolean = false;
     encuestaForm: FormGroup<{
         response1: FormControl<string>;
         response2: FormControl<string>;
@@ -166,6 +192,7 @@ export class DialogEncuesta implements OnInit {
         private aprendizajeGuiadoService: AprendizajeGuiadoService,
         private fb: FormBuilder,
         private questionaryService: QuestionaryService,
+        private service: MessageService
     ) {
         this.encuestaForm = fb.group({
             response1: this.fb.control('', { nonNullable: true, validators: [Validators.required] }),
@@ -181,15 +208,6 @@ export class DialogEncuesta implements OnInit {
         });
     }
 
-
-    submitEncuesta() {
-        console.log(this.encuestaForm.value);
-        if (this.encuestaForm.valid) {
-            // console.log('Formulario válido, enviando datos:', this.encuestaForm.value);
-            // Aquí puedes agregar la lógica para enviar los datos al servidor o procesarlos según sea necesario.
-        }
-    }
-
     // Mantener un registro de las respuestas del usuario
     userAnswers: UserAnswer[] = [];
 
@@ -198,6 +216,8 @@ export class DialogEncuesta implements OnInit {
 
     // La cantidad total de pasos es el número de preguntas
     totalSteps: number = 0;
+
+    //TODO: Manejar el cuestionario con responsive
 
     ngOnInit(): void {
         this.aprendizajeGuiadoService.getAllPreguntas().subscribe((data) => {
@@ -224,7 +244,6 @@ export class DialogEncuesta implements OnInit {
     }
 
     /**
-     * Maneja la selección de una opción de respuesta.
      * @param questionId El ID de la pregunta.
      * @param optionId El ID de la opción seleccionada.
      */
@@ -290,20 +309,33 @@ export class DialogEncuesta implements OnInit {
         activateCallback(prevStep);
     }
 
+
     /**
      * Lógica a ejecutar al finalizar el cuestionario.
      */
     finishQuiz(): void {
-
         const payload = {
             answers: this.userAnswers
         };
+
         console.log('Respuestas del usuario:', this.userAnswers);
-        this.questionaryService.sendQuestionary(payload).subscribe(
-            (response) => {
+
+        this.isLoading = true; // ⏳ activa la animación
+
+        this.questionaryService.sendQuestionary(payload).subscribe({
+            next: (response) => {
                 console.log('Cuestionario enviado exitosamente:', response);
+                this.service.add({ severity: 'success', summary: 'Success', detail: 'Se ha creado tu perfil, puedes revisarlo' });
             },
-        )
-        alert('¡Has completado el cuestionario!');
+            error: (error) => {
+                this.isLoading = false;
+                this.service.add({ severity: 'error', summary: 'Error', detail: 'Ocurrió un error al enviar el cuestionario. Por favor, intenta nuevamente.' });
+            },
+            complete: () => {
+                this.isLoading = false;
+                localStorage.setItem('encuestado', 'true');
+                this.isComplete= true;
+            }
+        });
     }
 }
