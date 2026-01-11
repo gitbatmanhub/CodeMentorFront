@@ -10,6 +10,7 @@ import { AuthGuard } from '@/auth/guards/auth.guard';
 import { Aprendizajelibre } from '@/pages/empty/aprendizajelibre';
 import { Aprendizajeguiado } from '@/pages/empty/aprendizajeguiado';
 import { Proyectos } from '@/pages/empty/proyectos';
+import { ProfileComponent } from '@/pages/profile/profile';
 
 export const appRoutes: Routes = [
     {path: '', component: Landing},
@@ -25,6 +26,7 @@ export const appRoutes: Routes = [
             {path: 'free', component: Aprendizajelibre},
             {path: 'guia', component: Aprendizajeguiado},
             {path: 'proyectos', component: Proyectos },
+            {path: 'perfil', component: ProfileComponent },
 
         ],
 
