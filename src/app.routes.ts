@@ -11,6 +11,7 @@ import { Aprendizajelibre } from '@/pages/empty/aprendizajelibre';
 import { Aprendizajeguiado } from '@/pages/empty/aprendizajeguiado';
 import { Proyectos } from '@/pages/empty/proyectos';
 import { ProfileComponent } from '@/pages/profile/profile';
+import { ChatComponent } from '@/pages/chat/chat.component';
 
 export const appRoutes: Routes = [
     {path: '', component: Landing},
@@ -27,6 +28,7 @@ export const appRoutes: Routes = [
             {path: 'guia', component: Aprendizajeguiado},
             {path: 'proyectos', component: Proyectos },
             {path: 'perfil', component: ProfileComponent },
+            {path: 'chat', component: ChatComponent },
 
         ],
 

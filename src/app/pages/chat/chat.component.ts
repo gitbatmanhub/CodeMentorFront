@@ -1,5 +1,13 @@
-import { Component, input, OnInit } from '@angular/core';
+import { Component, OnInit, input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Button } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
+import { isPlatformBrowser } from '@angular/common';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { SplitButton } from 'primeng/splitbutton';
+import { Toolbar } from 'primeng/toolbar';
+import { IftaLabel } from 'primeng/iftalabel';
 
 interface ChatMessage {
     id: number;
@@ -7,98 +15,67 @@ interface ChatMessage {
     content: string;
 }
 
-
-
 @Component({
     selector: 'app-chat',
+    standalone: true,
+    imports: [FormsModule, Button, InputText, IconField, Toolbar],
     template: `
-        <div class="card">
 
-            <div class="h-screen flex flex-col items-center  text-white">
+        <div class="card ">
+            <p-toolbar class="sticky">
+                <ng-template #start>
+                    <p-button icon="pi pi-print" class="mr-2" severity="secondary" text />
+                </ng-template>
 
-                <!-- CONTENEDOR CHAT -->
-                <div class="flex-1 w-full flex justify-center overflow-hidden">
+                <ng-template #center>
+                    <p-iconfield>
+                        <p class="font-bold"><i class="pi pi-microchip-ai"></i> Chat name</p>
+                    </p-iconfield>
+                </ng-template>
 
-                    <div
-                        class="w-full max-w-2xl px-4 py-6 overflow-y-auto space-y-4"
-                    >
-
-                        @for (message of messages; track message.id) {
-
-                            <!-- MENSAJE USUARIO -->
-                            @if (message.role === 'user') {
-                                <div class="flex justify-end">
-                                    <div class="bg-blue-600 text-white rounded-xl px-4 py-2 max-w-[80%]">
-                                        {{ message.content }}
-                                    </div>
-                                </div>
-                            }
-
-                            <!-- MENSAJE IA -->
-                            @if (message.role === 'ai') {
-                                <div class="flex justify-start">
-                                    <div class="bg-neutral-800 rounded-xl px-4 py-2 max-w-[80%]">
-                                        {{ message.content }}
-                                    </div>
-                                </div>
-                            }
-
-                        }
-
-                    </div>
-                </div>
-
-                <!-- INPUT FIJO ABAJO -->
-                <div class="w-full flex justify-center border-t border-white/10 ">
-                    <div class="w-full max-w-2xl px-4 py-4">
-
-                        <div class="flex gap-2">
-                            <input
-                                type="text"
-                                [(ngModel)]="inputMessage"
-                                placeholder="Escribe tu mensaje..."
-                                class="flex-1 rounded-lg bg-neutral-900 border border-white/10 px-4 py-2 outline-none focus:border-blue-500"
-                            />
-
-                            <button
-                                (click)="sendMessage()"
-                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
-                            >
-                                Enviar
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
+                <ng-template #end>
+                    <p-button icon="pi pi-download" severity="secondary" text />
+                </ng-template>
+            </p-toolbar>
         </div>
+        <div class=" relative min-h-[calc(90vh-4rem)]   text-white flex justify-center" #scrollContainer>
+            <div class="w-full  max-w-3xl flex flex-col min-h-full">
+                <div class="flex-1 px-4 py-8 space-y-6">
+                    @for (message of messages; track message.id) {
+                        <div [class]="message.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+                            <div [class]="message.role === 'user' ? 'bg-blue-600 rounded-2xl px-4 py-2 max-w-[85%]' : 'bg-neutral-800 rounded-2xl px-4 py-2 max-w-[85%] border border-white/5'">
+                                {{ message.content }}
+                            </div>
+                        </div>
+                    }
+                </div>
 
-    `,
-    imports: [
-        FormsModule
-    ],
-    standalone: true
+                <div class="sticky bottom-0  backdrop-blur-lg  ">
+                    <div class="flex gap-2 w-full   rounded-2xl p-2 shadow-2xl focus-within:border-blue-500 transition-all">
+                        <input pInputText type="text" [(ngModel)]="inputMessage" (keydown.enter)="sendMessage()" placeholder="Escribe un mensaje..." class="flex-1  px-3 outline-none" />
+                        <p-button  (click)="this.scroll()" class="rounded-xl font-semibold transition-colors"> Enviar </p-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
 })
 export class ChatComponent implements OnInit {
     title = input<string>();
 
-    messages: ChatMessage[] = [
-        {
-            id: 1,
-            role: 'ai',
-            content: 'Hola 👋 ¿En qué puedo ayudarte hoy?'
-        }
-    ];
+    // Referencia al contenedor de scroll
+    @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
+
+    messages: ChatMessage[] = [{ id: 1, role: 'ai', content: 'Hola 👋 ¿En qué puedo ayudarte hoy?' }];
 
     inputMessage = '';
 
-
-    constructor() {}
-
     ngOnInit() {
-        console.log('ChatComponent initialized with title:', this.title);
+        this.scrollToTop();
+    }
+
+    scroll() {
+        this.scrollToTop();
     }
 
     sendMessage() {
@@ -110,15 +87,26 @@ export class ChatComponent implements OnInit {
             content: this.inputMessage
         });
 
+        const userText = this.inputMessage;
+        this.inputMessage = '';
+
         // Simulación IA
         setTimeout(() => {
             this.messages.push({
                 id: Date.now() + 1,
                 role: 'ai',
-                content: 'Estoy procesando tu mensaje 🤖'
+                content: `Recibí tu mensaje: "${userText}". Estoy procesando... 🤖`
             });
         }, 600);
+        this.scrollToTop();
+    }
 
-        this.inputMessage = '';
-}
+    scrollToTop(): void {
+        setTimeout(() => {
+            window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 100);
+    }
 }

@@ -35,11 +35,26 @@ export class AppMenu {
                 icon: 'pi pi-fw pi-briefcase',
                 routerLink: ['/pages'],
                 items: [
-
                     {
                         label: 'Perfil',
                         icon: 'pi pi-fw pi-user',
                         routerLink: ['/dashboard/perfil']
+                    },
+
+                    {
+                        label: 'Aprendizaje libre',
+                        icon: 'pi pi-fw pi-microchip-ai',
+                        routerLink: ['/dashboard/free']
+                    },
+                    {
+                        label: 'Aprendizaje Guiado',
+                        icon: 'pi pi-fw pi-users',
+                        routerLink: ['/dashboard/guia']
+                    },
+                    {
+                        label: 'Proyectos',
+                        icon: 'pi pi-fw pi-hammer',
+                        routerLink: ['/dashboard/proyectos']
                     }
                 ]
             },
@@ -48,7 +63,6 @@ export class AppMenu {
                 icon: 'pi pi-fw pi-briefcase',
                 routerLink: ['/pages'],
                 items: [
-
                     {
                         label: 'Salir',
                         icon: 'pi pi-fw pi-sign-out',

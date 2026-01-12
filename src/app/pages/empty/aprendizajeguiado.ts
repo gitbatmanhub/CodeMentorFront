@@ -15,7 +15,7 @@ import { Badge } from 'primeng/badge';
 @Component({
     selector: 'app-aprendizajeguiado',
     standalone: true,
-    imports: [Accordion, AccordionPanel, AccordionHeader, AccordionContent,  ProgressBar, Avatar],
+    imports: [Accordion, AccordionPanel, AccordionHeader, AccordionContent, ProgressBar, Avatar],
     template: `
         <div class="card">
             <div class="font-semibold text-xl mb-4">Aprendizaje guiado</div>
@@ -56,7 +56,7 @@ import { Badge } from 'primeng/badge';
                             <div class="grid grid-cols-12 ">
                                 @for (tema of tab.temas; track tema.idTema) {
                                     <div class="  col-span-12 lg:col-span-6 xl:col-span-3">
-                                        <div class="border-gray-50 card mb-0">
+                                        <div  class="border-b-gray-500 p-1 card mb-0">
                                             <div class="flex justify-between mb-4">
                                                 <div>
                                                     <span class="block text-muted-color font-medium mb-4">{{ tema.descripcion }}</span>
