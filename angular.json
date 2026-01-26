@@ -50,6 +50,10 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
+                    "options": {
+                        "host": "codementor.com",
+                        "allowedHosts": ["codementor.com"]
+                    },
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {

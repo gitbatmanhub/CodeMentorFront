@@ -55,7 +55,6 @@ export class AprendizajeGuiadoService {
     constructor(private http: HttpClient) {}
 
     getAllAreas(): Observable<UnidadInterface[]> {
-        console.log(this.http.get(this.apiPreguntas));
         return this.http.get<UnidadInterface[]>(this.apiUrl).pipe(
             catchError((error) => {
                 return of([]);

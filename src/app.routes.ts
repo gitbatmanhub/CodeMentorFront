@@ -28,7 +28,7 @@ export const appRoutes: Routes = [
             {path: 'guia', component: Aprendizajeguiado},
             {path: 'proyectos', component: Proyectos },
             {path: 'perfil', component: ProfileComponent },
-            {path: 'chat', component: ChatComponent },
+            {path: 'chat/:idTemaConversacion', component: ChatComponent },
 
         ],
 

@@ -8,6 +8,7 @@ import { appRoutes } from './app.routes';
 import { AuthService } from '@/auth/services/auth';
 import { AuthGuard} from '@/auth/guards/auth.guard';
 import { AuthInterceptor} from '@/auth/interceptors/auth.interceptor';
+import { provideMarkdown } from 'ngx-markdown';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -17,6 +18,8 @@ export const appConfig: ApplicationConfig = {
         AuthGuard,
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
         provideAnimationsAsync(),
-        providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } })
+        providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } }),
+        provideMarkdown()
+
     ]
 };

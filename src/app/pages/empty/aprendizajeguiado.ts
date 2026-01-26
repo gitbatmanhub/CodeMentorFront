@@ -1,21 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { BestSellingWidget } from '@/pages/dashboard/components/bestsellingwidget';
-import { NotificationsWidget } from '@/pages/dashboard/components/notificationswidget';
-import { RecentSalesWidget } from '@/pages/dashboard/components/recentsaleswidget';
-import { RevenueStreamWidget } from '@/pages/dashboard/components/revenuestreamwidget';
-import { StatsWidget } from '@/pages/dashboard/components/statswidget';
 import { AprendizajeGuiadoService, UnidadInterface } from '@/pages/service/aprendizaje.guiado.service';
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
 import { RouterLink } from '@angular/router';
-import { Tag } from 'primeng/tag';
 import { ProgressBar } from 'primeng/progressbar';
 import { Avatar } from 'primeng/avatar';
-import { Badge } from 'primeng/badge';
+
 
 @Component({
     selector: 'app-aprendizajeguiado',
     standalone: true,
-    imports: [Accordion, AccordionPanel, AccordionHeader, AccordionContent, ProgressBar, Avatar],
+    imports: [Accordion, AccordionPanel, AccordionHeader, AccordionContent, ProgressBar, Avatar, RouterLink],
     template: `
         <div class="card">
             <div class="font-semibold text-xl mb-4">Aprendizaje guiado</div>
@@ -30,13 +24,6 @@ import { Badge } from 'primeng/badge';
                 @for (tab of listOfUnidades; track tab.idUnidad) {
                     <p-accordion-panel [value]="tab.description">
                         <p-accordion-header>
-                            <!--<div class=" md:w-1/4 end-0">
-                                <p-progressbar [value]="25" [showValue]="true"></p-progressbar>
-                            </div>
-                            <div class="md:w-1/4 end-0">
-                                <p-tag icon="pi pi-microchip-ai" value="ia"></p-tag>
-                            </div>-->
-
                             <span class="flex items-center gap-2 w-full">
                                 @if (tab.duracionHoras > 5) {
                                     <p-avatar icon="pi pi-book" shape="circle" />
@@ -55,8 +42,10 @@ import { Badge } from 'primeng/badge';
                         <p-accordion-content>
                             <div class="grid grid-cols-12 ">
                                 @for (tema of tab.temas; track tema.idTema) {
-                                    <div class="  col-span-12 lg:col-span-6 xl:col-span-3">
-                                        <div  class="border-b-gray-500 p-1 card mb-0">
+                                    <div class=" cursor-pointer col-span-12 lg:col-span-6 xl:col-span-3">
+                                        <div class="border-b-gray-500 p-1 card mb-0">
+                                            <a routerLink="/dashboard/chat/{{tema.idTema}}">
+
                                             <div class="flex justify-between mb-4">
                                                 <div>
                                                     <span class="block text-muted-color font-medium mb-4">{{ tema.descripcion }}</span>
@@ -68,10 +57,12 @@ import { Badge } from 'primeng/badge';
                                             </div>
                                             <div class="md:w-2/2 mb-2">
                                                 <span class="text-primary font-medium">Avance: </span>
-                                                <p-progressbar [value]="60" [showValue]="true"></p-progressbar>
+                                                <p-progressbar [value]="6" [showValue]="true"></p-progressbar>
                                             </div>
                                             <span class="text-primary font-medium">Dificultad: </span>
                                             <span class="text-muted-color"> {{ tema.nivelDificultad }}</span>
+                                            </a>
+
                                         </div>
                                     </div>
                                 }
