@@ -39,22 +39,42 @@ export class AppMenu {
                         label: 'Perfil',
                         icon: 'pi pi-fw pi-user',
                         routerLink: ['/dashboard/perfil']
-                    },
+                    }
+                ]
+            },
+            {
+                label: 'Aprendizaje',
+                items: [
+                    {
+                        label: 'Aprendizaje',
+                        icon: 'pi pi-fw pi-book',
+                        items: [
+                            {
+                                label: 'Aprendizaje libre',
+                                icon: 'pi pi-fw pi-microchip-ai',
+                                routerLink: ['/dashboard/free']
+                            },
+                            {
+                                label: 'Aprendizaje Guiado',
+                                icon: 'pi pi-fw pi-users',
+                                routerLink: ['/dashboard/guia']
+                            },
+                            {
+                                label: 'Proyectos',
+                                icon: 'pi pi-fw pi-hammer',
+                                routerLink: ['/dashboard/proyectos']
+                            }
+                        ]
+                    }
+                ]
+            },
 
+            {
+                label: 'Evaluacion',
+                items: [
                     {
-                        label: 'Aprendizaje libre',
-                        icon: 'pi pi-fw pi-microchip-ai',
-                        routerLink: ['/dashboard/free']
-                    },
-                    {
-                        label: 'Aprendizaje Guiado',
-                        icon: 'pi pi-fw pi-users',
-                        routerLink: ['/dashboard/guia']
-                    },
-                    {
-                        label: 'Proyectos',
-                        icon: 'pi pi-fw pi-hammer',
-                        routerLink: ['/dashboard/proyectos']
+                        label: 'Evaluaciones',
+                        icon: 'pi pi-fw pi-receipt'
                     }
                 ]
             },
@@ -72,66 +92,6 @@ export class AppMenu {
                     }
                 ]
             }
-            /* {
-                label: 'Hierarchy',
-                items: [
-                    {
-                        label: 'Submenu 1',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Submenu 1.1',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' }
-                                ]
-                            },
-                            {
-                                label: 'Submenu 1.2',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [{ label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                            }
-                        ]
-                    },
-                    {
-                        label: 'Submenu 2',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Submenu 2.1',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
-                                ]
-                            },
-                            {
-                                label: 'Submenu 2.2',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                            }
-                        ]
-                    }
-                ]
-            },*/
-            /*{
-                label: 'Get Started',
-                items: [
-                    {
-                        label: 'Documentation',
-                        icon: 'pi pi-fw pi-book',
-                        routerLink: ['/documentation']
-                    },
-                    {
-                        label: 'View Source',
-                        icon: 'pi pi-fw pi-github',
-                        url: 'https://github.com/primefaces/sakai-ng',
-                        target: '_blank'
-                    }
-                ]
-            }*/
         ];
     }
 }

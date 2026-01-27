@@ -15,7 +15,7 @@ export interface BackendLoginResponse {
     email: string;
     token: string;
     role: string[];
-    idUser: string;
+    id: string;
     encuesta: boolean;
     codColaborador: string | null;
 }

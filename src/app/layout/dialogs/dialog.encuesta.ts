@@ -21,6 +21,7 @@ import { finalize } from 'rxjs/operators';
 import { MessageService } from 'primeng/api';
 import { MessageModule } from 'primeng/message';
 import { Toast } from 'primeng/toast';
+import { RouterLink } from '@angular/router';
 
 interface Option {
     idOption: number;
@@ -66,7 +67,8 @@ interface UserAnswer {
         FormsModule,
         ReactiveFormsModule,
         MessageModule,
-        Toast
+        Toast,
+        RouterLink
     ],
     template: `
         <p-toast />
@@ -155,7 +157,9 @@ interface UserAnswer {
                                             }
 
                                             @if (isComplete){
-                                                <p-button label="Ver perfil" icon="pi pi-user" iconPos="right" severity="success" />
+                                                    <a routerLink="/dashboard/perfil" pButton  >
+                                                        <span pButtonLabel>Ver perfil</span>
+                                                    </a>
                                             }
 
                                                 </div>
@@ -248,7 +252,6 @@ export class DialogEncuesta implements OnInit {
      * @param optionId El ID de la opción seleccionada.
      */
     selectOption(questionId: number, optionId: number): void {
-        console.log(`Pregunta ID: ${questionId}, Opción seleccionada ID: ${optionId}`);
         const answerIndex = this.userAnswers.findIndex((a) => a.questionId === questionId);
         if (answerIndex !== -1) {
             this.userAnswers[answerIndex].selectedOptionId = optionId;
@@ -309,7 +312,6 @@ export class DialogEncuesta implements OnInit {
         activateCallback(prevStep);
     }
 
-
     /**
      * Lógica a ejecutar al finalizar el cuestionario.
      */
@@ -318,13 +320,11 @@ export class DialogEncuesta implements OnInit {
             answers: this.userAnswers
         };
 
-        console.log('Respuestas del usuario:', this.userAnswers);
 
         this.isLoading = true; // ⏳ activa la animación
 
         this.questionaryService.sendQuestionary(payload).subscribe({
             next: (response) => {
-                console.log('Cuestionario enviado exitosamente:', response);
                 this.service.add({ severity: 'success', summary: 'Success', detail: 'Se ha creado tu perfil, puedes revisarlo' });
             },
             error: (error) => {
@@ -334,7 +334,7 @@ export class DialogEncuesta implements OnInit {
             complete: () => {
                 this.isLoading = false;
                 localStorage.setItem('encuestado', 'true');
-                this.isComplete= true;
+                this.isComplete = true;
             }
         });
     }

@@ -2,34 +2,40 @@ import { Component, OnInit, input, ViewChild, ElementRef, AfterViewChecked, inje
 import { FormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
-import { IconField } from 'primeng/iconfield';
 import { Toolbar } from 'primeng/toolbar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ChatIAInterface, ChatIaService } from '@/pages/service/chat-ia.service';
 import { MarkdownComponent } from 'ngx-markdown';
 import { TemarioService } from '@/pages/service/temario.service';
+import { MessageService } from 'primeng/api';
+import { Toast } from 'primeng/toast';
 
 interface ChatMessage {
     id: number;
     role: 'user' | 'ai';
     content: string;
+    loading?: boolean
 }
 
 @Component({
     selector: 'app-chat',
     standalone: true,
-    imports: [FormsModule, Button, InputText, Toolbar, MarkdownComponent],
+    imports: [FormsModule, Button, InputText, Toolbar, MarkdownComponent, RouterLink, Toast],
     template: `
+        <p-toast />
         <div class="relative min-h-[calc(90vh-4rem)] text-white flex justify-center" #scrollContainer>
             <div class="w-full max-w-3xl flex flex-col min-h-full">
                 <div class="sticky top-0 z-50  backdrop-blur-md">
                     <p-toolbar styleClass="bg-transparent border-none py-3">
                         <ng-template #start>
-                            <p-button icon="pi pi-print" severity="secondary" [text]="true" />
+                            <!--                            <a routerLink="/dashboard/guia" pButtonIcon="pi pi-arrow-left" ></a>-->
+                            <p-button routerLink="/dashboard/guia" icon="pi pi-arrow-left" severity="secondary"
+                                      [text]="true" />
                         </ng-template>
 
                         <ng-template #center>
-                            <div class="flex items-center gap-2 border border-white/10 bg-white/5 px-4 py-2 rounded-full">
+                            <div
+                                class="flex items-center gap-2 border border-white/10 bg-white/5 px-4 py-2 rounded-full">
                                 <i class="pi pi-microchip-ai text-blue-400"></i>
                                 <span class="font-bold text-sm tracking-wide">{{ this.title }}</span>
                             </div>
@@ -45,18 +51,24 @@ interface ChatMessage {
                     @for (message of messages; track message.id) {
                         <div [class]="message.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
                             <div [class]="message.role === 'user' ? 'bg-blue-600 rounded-2xl px-4 py-2 max-w-[85%]' : 'bg-neutral-800 rounded-2xl px-4 py-3 max-w-[85%] border border-white/5 relative group'">
-                                @if (message.role === 'ai') {
+                                @if (message.loading) {
+                                    <div class="flex items-center gap-2 text-sm text-neutral-400 animate-pulse">
+                                        <i class="pi pi-spin pi-spinner"></i>
+                                        <span>Pensando...</span>
+                                    </div>
+                                } @else {
                                     <div class="markdown-container prose prose-invert max-w-none">
                                         <markdown [data]="message.content"></markdown>
                                     </div>
 
                                     <div class="flex justify-end mt-2 pt-2 border-t border-white/5">
-                                        <button (click)="copyToClipboard(message.content)" class="p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-lg transition-all flex items-center gap-2 text-xs">
-                                            <i class="pi pi-copy"></i> <span>Copiar</span>
+                                        <button
+                                            (click)="copyToClipboard(message.content)"
+                                            class="p-2 text-neutral-400 hover:text-white hover:bg-white/10 rounded-lg transition-all flex items-center gap-2 text-xs">
+                                            <i class="pi pi-copy"></i>
+                                            <span>Copiar</span>
                                         </button>
                                     </div>
-                                } @else {
-                                    <span class="whitespace-pre-wrap">{{ message.content }}</span>
                                 }
                             </div>
                         </div>
@@ -65,8 +77,11 @@ interface ChatMessage {
 
                 <div class="sticky bottom-0 z-50 backdrop-blur-lg bg-neutral-950/50">
                     <div class="flex gap-2 w-full p-4">
-                        <input pInputText type="text" [(ngModel)]="inputMessage" (keydown.enter)="sendMessage()" placeholder="Escribe un mensaje..." class="flex-1 px-3 outline-none rounded-xl" />
-                        <p-button (onClick)="sendMessage()" label="Enviar" styleClass="rounded-xl"></p-button>
+                        <input pInputText type="text" [(ngModel)]="inputMessage" (keydown.enter)="sendMessage()"
+                               placeholder="Escribe un mensaje..." class="flex-1 px-3 outline-none rounded-xl" />
+                        <p-button (onClick)="sendMessage()" icon="pi pi-send" label="Enviar"
+                                  styleClass="rounded-xl"></p-button>
+
                     </div>
                 </div>
             </div>
@@ -107,9 +122,11 @@ interface ChatMessage {
             border-radius: 0.4rem;
             white-space: nowrap;
         }
-    `
+    `,
+    providers: [MessageService]
 })
 export class ChatComponent implements OnInit {
+    visible: boolean = false;
     private route = inject(ActivatedRoute);
     title: string = 'Cargando...';
     idTemaConversacion: string | null = null;
@@ -128,14 +145,14 @@ export class ChatComponent implements OnInit {
 
     constructor(
         private chatIaService: ChatIaService,
-        private temarioService: TemarioService
+        private temarioService: TemarioService,
+        private messageService: MessageService
     ) {}
 
     ngOnInit() {
         this.scrollToTop();
         this.idTemaConversacion = this.route.snapshot.paramMap.get('idTemaConversacion');
-        console.log(`El tema del chat es: ${this.idTemaConversacion}`);
-        console.log(`El id usuario es: ${this.idUsuario}`);
+
         this.obtenertema(this.idTemaConversacion!);
         this.conversacion();
     }
@@ -145,19 +162,22 @@ export class ChatComponent implements OnInit {
     }
 
     copyToClipboard(text: string) {
-        if (!text) return;
-
+        if (!text) {
+            console.warn('Texto vacío');
+            return;
+        }
         // Usar la API moderna del portapapeles
         navigator.clipboard
             .writeText(text)
             .then(() => {
                 // Opcional: Podrías añadir un mensaje de confirmación (Toast)
-                console.log('Texto copiado al portapapeles');
+                this.copiedSuccess();
 
                 // Si usas PrimeNG MessageService:
                 // this.messageService.add({severity:'success', summary:'Copiado', detail:'Respuesta copiada al portapapeles'});
             })
             .catch((err) => {
+                this.copiedError()
                 console.error('Error al copiar: ', err);
             });
     }
@@ -180,6 +200,7 @@ export class ChatComponent implements OnInit {
     sendMessage() {
         if (!this.inputMessage.trim()) return;
 
+        // 1. Mensaje del usuario
         this.messages.push({
             id: Date.now(),
             role: 'user',
@@ -189,20 +210,54 @@ export class ChatComponent implements OnInit {
         const userText = this.inputMessage;
         this.inputMessage = '';
 
+        // 2. Mensaje temporal de la IA
+        const loadingMessageId = Date.now() + 1;
+
+        this.messages.push({
+            id: loadingMessageId,
+            role: 'ai',
+            content: 'Escribiendo...',
+            loading: true
+        });
+
+        this.scrollToTop();
+
         const chatEsteban = this.createChatModel(userText);
 
-        this.chatIaService.chat(chatEsteban).subscribe((chat) => {
-            this.idConversacionMongo = chat.idConversationMain;
-            const respuestaIA = chat.text || 'Lo siento, no tengo una respuesta en este momento.';
-            // console.log(respuestaIA);
-            this.messages.push({
-                id: Date.now() + 1,
-                role: 'ai',
-                content: respuestaIA
-            });
+        // 3. Llamada al backend
+        this.chatIaService.chat(chatEsteban).subscribe({
+            next: (chat) => {
+                const respuestaIA = chat.text || 'Lo siento, no tengo una respuesta en este momento.';
+
+                // 4. Reemplazar el mensaje "cargando"
+                const index = this.messages.findIndex(m => m.id === loadingMessageId);
+
+                if (index !== -1) {
+                    this.messages[index] = {
+                        id: loadingMessageId,
+                        role: 'ai',
+                        content: respuestaIA
+                    };
+                }
+
+                this.idConversacionMongo = chat.idConversationMain;
+                this.scrollToTop();
+            },
+            error: () => {
+                // 5. Error → reemplazar loading
+                const index = this.messages.findIndex(m => m.id === loadingMessageId);
+
+                if (index !== -1) {
+                    this.messages[index] = {
+                        id: loadingMessageId,
+                        role: 'ai',
+                        content: '⚠️ Ocurrió un error al obtener la respuesta.'
+                    };
+                }
+            }
         });
-        this.scrollToTop();
     }
+
 
     conversacion() {
         this.chatIaService.getConversationByTemaAndUsuario(this.idTemaConversacion!, this.idUsuario).subscribe((historial) => {
@@ -214,8 +269,8 @@ export class ChatComponent implements OnInit {
                     id: 1,
                     role: 'ai',
                     content: `Hola 👋
-                Hoy vamos a aprender sobre **{{title}}**.
-                ¿En qué puedo ayudarte hoy?
+Estoy aquí para ayudarte a aprender.
+¿En qué puedo ayudarte hoy?
         `
                 },
                 ...this.mapConversationToMessages(historial)
@@ -223,6 +278,14 @@ export class ChatComponent implements OnInit {
         });
 
         this.scrollToTop();
+    }
+
+    copiedSuccess() {
+        this.messageService.add({ severity: 'info', summary: 'Info', detail: 'Mensaje copiado exitosamente.' });
+    }
+
+    copiedError() {
+        this.messageService.add({ severity: 'warn', summary: 'Info', detail: 'El mensaje no se ha podido copiar.' });
     }
 
     obtenertema(idTema: string) {
@@ -264,5 +327,9 @@ export class ChatComponent implements OnInit {
         });
 
         return messages;
+    }
+
+    show(message: string, severity: string) {
+        this.messageService.add({ severity: `${severity}`, summary: 'Info', detail: `${message}`, life: 3000 });
     }
 }

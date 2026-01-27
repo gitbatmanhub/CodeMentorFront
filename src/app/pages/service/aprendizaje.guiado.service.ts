@@ -18,7 +18,8 @@ export interface Tema {
     duracionHoras: number
     instructores: string
     nivelDificultad: string
-    unidad: Unidad
+    unidad: Unidad,
+    isTest: boolean
 }
 
 export interface Unidad {

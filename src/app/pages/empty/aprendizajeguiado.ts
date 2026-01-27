@@ -4,12 +4,13 @@ import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'pr
 import { RouterLink } from '@angular/router';
 import { ProgressBar } from 'primeng/progressbar';
 import { Avatar } from 'primeng/avatar';
+import { NgIf } from '@angular/common';
 
 
 @Component({
     selector: 'app-aprendizajeguiado',
     standalone: true,
-    imports: [Accordion, AccordionPanel, AccordionHeader, AccordionContent, ProgressBar, Avatar, RouterLink],
+    imports: [Accordion, AccordionPanel, AccordionHeader, AccordionContent, Avatar, RouterLink],
     template: `
         <div class="card">
             <div class="font-semibold text-xl mb-4">Aprendizaje guiado</div>
@@ -44,25 +45,41 @@ import { Avatar } from 'primeng/avatar';
                                 @for (tema of tab.temas; track tema.idTema) {
                                     <div class=" cursor-pointer col-span-12 lg:col-span-6 xl:col-span-3">
                                         <div class="border-b-gray-500 p-1 card mb-0">
-                                            <a routerLink="/dashboard/chat/{{tema.idTema}}">
 
-                                            <div class="flex justify-between mb-4">
-                                                <div>
-                                                    <span class="block text-muted-color font-medium mb-4">{{ tema.descripcion }}</span>
-                                                    <div class="text-surface-900 dark:text-surface-0 font-medium text-sm">Instructor/es: {{ tema.instructores }}</div>
+                                            @if (tema.isTest){
+                                            } @else {
+
+                                            }
+
+                                            <a routerLink="/dashboard/chat/{{ tema.idTema }}">
+                                                <div class="flex justify-between mb-4">
+                                                    <div>
+                                                        <span class="block text-muted-color font-medium mb-4">{{ tema.descripcion }}</span>
+                                                        <div class="text-surface-900 dark:text-surface-0 font-medium text-sm">Instructor/es: {{ tema.instructores }}</div>
+                                                    </div>
+                                                    <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                                                        <i class="pi pi-microchip-ai text-blue-500 text-xl!"></i>
+                                                    </div>
                                                 </div>
-                                                <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                                                    <i class="pi pi-microchip-ai text-blue-500 text-xl!"></i>
-                                                </div>
-                                            </div>
-                                            <div class="md:w-2/2 mb-2">
+
+                                                @if (tema.isTest) {
+                                                    <div class="mb-2">
+                                                        <span class="text-primary font-medium">Tipo: </span>
+                                                        <span class="text-muted-color"> Evaluación</span>
+                                                    </div>
+                                                } @else {
+                                                    <div class="mb-2">
+                                                        <span class="text-primary font-medium">Tipo: </span>
+                                                        <span class="text-muted-color"> Aprendizaje</span>
+                                                    </div>
+                                                }
+                                                <!--<div class="md:w-2/2 mb-2">
                                                 <span class="text-primary font-medium">Avance: </span>
                                                 <p-progressbar [value]="6" [showValue]="true"></p-progressbar>
-                                            </div>
-                                            <span class="text-primary font-medium">Dificultad: </span>
-                                            <span class="text-muted-color"> {{ tema.nivelDificultad }}</span>
+                                            </div>-->
+                                                <span class="text-primary font-medium">Dificultad: </span>
+                                                <span class="text-muted-color"> {{ tema.nivelDificultad }}</span>
                                             </a>
-
                                         </div>
                                     </div>
                                 }
@@ -83,7 +100,6 @@ export class Aprendizajeguiado implements OnInit {
         const list = this.aprendizajeguiado.getAllAreas().subscribe({
             next: (data) => {
                 this.listOfUnidades = data;
-                console.log('Areas fetched successfully:', data);
             },
             error: (err) => {
                 console.error('Error fetching areas:', err);

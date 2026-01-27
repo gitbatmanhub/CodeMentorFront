@@ -79,11 +79,10 @@ export class ProfileComponent implements OnInit {
 
     constructor(private profileService: ProfileService) {}
 
-    idUsuario: string = 'f6dc28f1-3034-4460-a6c3-0ae8c47840aa';
+    idUsuario: string = localStorage.getItem('idUser')!;
 
     ngOnInit() {
         this.profileService.getProfile(this.idUsuario).subscribe((data) => {
-            console.log(data);
             this.usuario = data;
         });
         // Initialization logic here

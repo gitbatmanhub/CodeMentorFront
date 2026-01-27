@@ -94,16 +94,17 @@ export class AuthService {
 
 
     setLocalStorageForColab(res: BackendLoginResponse) {
+
         const user: UserInterface = {
             fullName: res.fullName,
             email: res.email,
-            idUser: res.idUser,
+            idUser: res.id,
             encuestado: res.encuesta,
         };
-        console.log('Login successful, storing user data:', user, 'with roles:', res.role);
         localStorage.setItem('authToken', res.token);
         localStorage.setItem('currentUser', JSON.stringify(user));
         localStorage.setItem('userName', user.fullName);
+        localStorage.setItem('idUser', user.idUser!);
         localStorage.setItem('encuestado', String(res.encuesta));
         localStorage.setItem('roles', JSON.stringify(res.role));
         this.roles = res.role;

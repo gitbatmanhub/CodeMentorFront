@@ -14,10 +14,8 @@ export class AuthGuard implements CanActivate {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         if (this.authService.isAuthenticated()) {
-            console.log('AuthGuard: usuario autenticado, permitiendo acceso.');
             return true; // El usuario está autenticado, permite el acceso
         } else {
-            console.log('AuthGuard: usuario no autenticado, redirigiendo al login.');
             // El usuario no está autenticado, redirige a la página de login
             this.router.navigate(['/auth/login'], {queryParams: {returnUrl: state.url}});
             return false;
