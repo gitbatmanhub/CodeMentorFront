@@ -5,12 +5,14 @@ import { RouterLink } from '@angular/router';
 import { ProgressBar } from 'primeng/progressbar';
 import { Avatar } from 'primeng/avatar';
 import { NgIf } from '@angular/common';
+import { StyleClass } from 'primeng/styleclass';
+import { Button } from 'primeng/button';
 
 
 @Component({
     selector: 'app-aprendizajeguiado',
     standalone: true,
-    imports: [Accordion, AccordionPanel, AccordionHeader, AccordionContent, Avatar, RouterLink],
+    imports: [Accordion, AccordionPanel, AccordionHeader, AccordionContent, RouterLink, Button, StyleClass],
     template: `
         <div class="card">
             <div class="font-semibold text-xl mb-4">Aprendizaje guiado</div>
@@ -27,9 +29,28 @@ import { NgIf } from '@angular/common';
                         <p-accordion-header>
                             <span class="flex items-center gap-2 w-full">
                                 @if (tab.duracionHoras > 5) {
-                                    <p-avatar icon="pi pi-book" shape="circle" />
+                                    <p-button
+                                        icon="pi pi-book"
+                                        pStyleClass="@next"
+                                        enterFromClass="hidden"
+                                        enterActiveClass="animate-scalein"
+                                        leaveToClass="hidden"
+                                        leaveActiveClass="animate-fadeout"
+                                        type="button"
+                                        rounded
+                                    />
+
                                 } @else {
-                                    <p-avatar class="mr-2" icon="pi pi-verified" size="normal" [style]="{ 'background-color': '#2196F3', color: '#ffffff' }" shape="circle"></p-avatar>
+                                    <p-button
+                                        icon="pi pi-verified"
+                                        pStyleClass="@next"
+                                        enterFromClass="hidden"
+                                        enterActiveClass="animate-scalein"
+                                        leaveToClass="hidden"
+                                        leaveActiveClass="animate-fadeout"
+                                        type="button"
+                                        rounded
+                                    />
                                 }
 
                                 <span class="font-bold whitespace-nowrap">{{ tab.description }}</span>
@@ -45,11 +66,8 @@ import { NgIf } from '@angular/common';
                                 @for (tema of tab.temas; track tema.idTema) {
                                     <div class=" cursor-pointer col-span-12 lg:col-span-6 xl:col-span-3">
                                         <div class="border-b-gray-500 p-1 card mb-0">
-
-                                            @if (tema.isTest){
-                                            } @else {
-
-                                            }
+                                            @if (tema.isTest) {
+                                            } @else {}
 
                                             <a routerLink="/dashboard/chat/{{ tema.idTema }}">
                                                 <div class="flex justify-between mb-4">

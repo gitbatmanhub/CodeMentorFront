@@ -1,26 +1,14 @@
 import { Component } from '@angular/core';
 
 import { StatsWidget } from '@/pages/dashboard/components/statswidget';
+import { ChatComponent } from '@/pages/chat/chat-free.component';
 
 @Component({
     selector: 'app-aprendizajelibre',
     standalone: true,
-    imports: [
-
-        StatsWidget
-    ],
+    imports: [ ChatComponent],
     template: `
-        <div class="grid grid-cols-12 gap-8">
-            <app-stats-widget class="contents" />
-            <!--<div class="col-span-12 xl:col-span-6">
-                <app-recent-sales-widget />
-                <app-best-selling-widget />
-            </div>
-            <div class="col-span-12 xl:col-span-6">
-                <app-revenue-stream-widget />
-                <app-notifications-widget />
-            </div>-->
-        </div>
+        <app-free-chat/>
     `
 })
 export class Aprendizajelibre {}

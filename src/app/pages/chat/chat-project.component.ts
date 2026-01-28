@@ -1,4 +1,4 @@
-import { Component, OnInit, input, ViewChild, ElementRef, AfterViewChecked, inject } from '@angular/core';
+import { Component, OnInit, input, ViewChild, ElementRef, AfterViewChecked, inject, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
@@ -18,7 +18,7 @@ interface ChatMessage {
 }
 
 @Component({
-    selector: 'app-chat',
+    selector: 'app-chat-project',
     standalone: true,
     imports: [FormsModule, Button, InputText, Toolbar, MarkdownComponent, RouterLink, Toast],
     template: `
@@ -29,7 +29,7 @@ interface ChatMessage {
                     <p-toolbar styleClass="bg-transparent border-none py-3">
                         <ng-template #start>
                             <!--                            <a routerLink="/dashboard/guia" pButtonIcon="pi pi-arrow-left" ></a>-->
-                            <p-button routerLink="/dashboard/guia" icon="pi pi-arrow-left" severity="secondary"
+                            <p-button routerLink="/dashboard/proyectos" icon="pi pi-arrow-left" severity="secondary"
                                       [text]="true" />
                         </ng-template>
 
@@ -37,7 +37,7 @@ interface ChatMessage {
                             <div
                                 class="flex items-center gap-2 border border-white/10 bg-white/5 px-4 py-2 rounded-full">
                                 <i class="pi pi-microchip-ai text-blue-400"></i>
-                                <span class="font-bold text-sm tracking-wide">{{ this.title }}</span>
+                                <span class="font-bold text-sm tracking-wide">{{ title }}</span>
                             </div>
                         </ng-template>
 
@@ -125,7 +125,7 @@ interface ChatMessage {
     `,
     providers: [MessageService]
 })
-export class ChatComponent implements OnInit {
+export class ChatProject implements OnInit {
     visible: boolean = false;
     private route = inject(ActivatedRoute);
     title: string = 'Cargando...';
@@ -134,9 +134,14 @@ export class ChatComponent implements OnInit {
     idUsuario: string = localStorage.getItem('idUser')!;
     waitingForResponse = false;
     chatModel: ChatIAInterface | null = null;
-    onload: boolean = true;
-    modeLearning: string = 'Libre';
+    modeLearning: string = 'Proyecto';
+    idProject: string | null = null;
 
+
+
+
+
+    onload: boolean = true;
 
     // Referencia al contenedor de scroll
     @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
@@ -153,10 +158,8 @@ export class ChatComponent implements OnInit {
 
     ngOnInit() {
         this.scrollToTop();
-        this.idTemaConversacion = this.route.snapshot.paramMap.get('idTemaConversacion');
-
-        this.obtenertema(this.idTemaConversacion!);
-        this.conversacion();
+        this.idProject = this.route.snapshot.paramMap.get('idProyecto');
+        this.conversacion(this.idProject!);
     }
 
     scroll() {
@@ -188,11 +191,10 @@ export class ChatComponent implements OnInit {
         // Lógica para crear o inicializar el modelo de chat IA
 
         this.chatModel = {
-            // Inicialización del modelo
             idConversationMain: this.idConversacionMongo || '',
             message: messageUser,
             userId: this.idUsuario,
-            idTemaConversacion: this.idTemaConversacion!,
+            idTemaConversacion: this.idProject!,
             mode: this.modeLearning
         };
 
@@ -227,7 +229,7 @@ export class ChatComponent implements OnInit {
         const chatEsteban = this.createChatModel(userText);
 
         // 3. Llamada al backend
-        this.chatIaService.chat(chatEsteban).subscribe({
+        this.chatIaService.chatProject(chatEsteban).subscribe({
             next: (chat) => {
                 const respuestaIA = chat.text || 'Lo siento, no tengo una respuesta en este momento.';
 
@@ -261,8 +263,8 @@ export class ChatComponent implements OnInit {
     }
 
 
-    conversacion() {
-        this.chatIaService.getConversationByTemaAndUsuarioMentor(this.idTemaConversacion!, this.idUsuario).subscribe((historial) => {
+    conversacion(idConversacion: string) {
+        this.chatIaService.getConversationByTemaAndUsuarioMentor(idConversacion, this.idUsuario, this.modeLearning).subscribe((historial) => {
             this.title = historial.title;
             this.idConversacionMongo = historial._id;
 
@@ -290,11 +292,6 @@ Estoy aquí para ayudarte a aprender.
         this.messageService.add({ severity: 'warn', summary: 'Info', detail: 'El mensaje no se ha podido copiar.' });
     }
 
-    obtenertema(idTema: string) {
-        this.temarioService.getTema(idTema).subscribe((data) => {
-            this.title = data.descripcion;
-        });
-    }
 
     scrollToTop(): void {
         setTimeout(() => {

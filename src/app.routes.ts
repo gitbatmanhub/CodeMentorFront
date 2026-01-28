@@ -12,6 +12,7 @@ import { Aprendizajeguiado } from '@/pages/empty/aprendizajeguiado';
 import { Proyectos } from '@/pages/empty/proyectos';
 import { ProfileComponent } from '@/pages/profile/profile';
 import { ChatComponent } from '@/pages/chat/chat.component';
+import { ChatProject } from '@/pages/chat/chat-project.component';
 
 export const appRoutes: Routes = [
     {path: '', component: Landing},
@@ -27,6 +28,7 @@ export const appRoutes: Routes = [
             {path: 'free', component: Aprendizajelibre},
             {path: 'guia', component: Aprendizajeguiado},
             {path: 'proyectos', component: Proyectos },
+            {path: 'proyectos/:idProyecto', component: ChatProject },
             {path: 'perfil', component: ProfileComponent },
             {path: 'chat/:idTemaConversacion', component: ChatComponent },
 

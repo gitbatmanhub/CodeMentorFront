@@ -45,7 +45,10 @@ export interface Message {
 })
 export class ChatIaService {
     private apiUrl = environment.apiUrl + '/gemini/chat';
-    private apiUrlData = environment.apiUrl + '/conversation/user-tema';
+    private apiUrlChatFree = environment.apiUrl + '/gemini/chatFree';
+    private apiUrlChatProject = environment.apiUrl + '/gemini/chatProject';
+    private apiUrlData = environment.apiUrl + '/conversation/user-mode';
+    private apiUrlDataByUser = environment.apiUrl + '/conversation/user-tema';
 
     constructor(private http: HttpClient) {}
 
@@ -57,16 +60,72 @@ export class ChatIaService {
         );
     }
 
+    chatFree(message: ChatIAInterface): Observable<any | responseInterface> {
+        return this.http.post<responseInterface>(this.apiUrlChatFree, message).pipe(
+            catchError((error) => {
+                return of([]);
+            })
+        );
+    }
+
+    chatProject(message: ChatIAInterface): Observable<any | responseInterface> {
+        return this.http.post<responseInterface>(this.apiUrlChatProject, message).pipe(
+            catchError((error) => {
+                return of([]);
+            })
+        );
+    }
+
     getConversationByTemaAndUsuario(
         idTema: string,
         idUsuario: string,
+        mode?: string,
+        idTemaConversacion?: string
     ): Observable<Historial> {
-        const params = new HttpParams()
+
+        let params = new HttpParams()
             .set('idTema', idTema)
             .set('idUsuario', idUsuario);
 
-        return this.http.get<any>(this.apiUrlData, { params });
+        if (mode) {
+            params = params.set('mode', mode);
+        }
+        if (idTemaConversacion) {
+            params = params.set('idTemaConversacion', idTemaConversacion);
+        }
+
+        return this.http.get<Historial>(this.apiUrlData, { params });
     }
+
+    getConversacionModoTutor(
+        idUsuario: string,
+        mode: string,
+        idTemaConversacion: string
+    ): Observable<Historial> {
+        let params = new HttpParams()
+            .set('idUsuario', idUsuario)
+            .set('mode', mode)
+            .set('idTemaConversacion', idTemaConversacion);
+
+        return this.http.get<Historial>(this.apiUrlData, { params });
+
+    }
+
+    getConversationByTemaAndUsuarioMentor(
+        idTema: string,
+        idUsuario: string,
+        mode?: string
+    ): Observable<Historial> {
+
+        let params = new HttpParams()
+            .set('idTema', idTema)
+            .set('idUsuario', idUsuario);
+
+
+
+        return this.http.get<Historial>(this.apiUrlDataByUser, { params });
+    }
+
 
 
 

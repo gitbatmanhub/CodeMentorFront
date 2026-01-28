@@ -85,7 +85,6 @@ export class ProfileComponent implements OnInit {
         this.profileService.getProfile(this.idUsuario).subscribe((data) => {
             this.usuario = data;
         });
-        // Initialization logic here
     }
 
     showDialogEncuesta() {
