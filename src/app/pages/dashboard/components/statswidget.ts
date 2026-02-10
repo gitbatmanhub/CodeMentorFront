@@ -31,6 +31,6 @@ export class StatsWidget {
         { link: 'free', nombre: 'Aprendizaje libre', metodo: 'Pregunta lo que desees', icon: 'pi-microchip-ai', nrestudiantes: 49, descripcion: '' },
         { link: 'guia', nombre: 'Apredizaje guiado', metodo: 'Sigue un temario', icon: 'pi-users', nrestudiantes: 49, descripcion: '' },
         { link: 'proyectos', nombre: 'Proyectos', metodo: 'Trabaja en proyectos', icon: 'pi-hammer', nrestudiantes: 49, descripcion: '' },
-        { link: 'evaluacion', nombre: 'Evaluaciones', metodo: 'Pon en práctica', icon: 'pi-receipt', nrestudiantes: 49, descripcion: '' }
+        { link: 'evaluaciones', nombre: 'Evaluaciones', metodo: 'Pon en práctica', icon: 'pi-receipt', nrestudiantes: 49, descripcion: '' }
     ];
 }

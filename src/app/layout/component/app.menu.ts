@@ -68,13 +68,14 @@ export class AppMenu {
                     }
                 ]
             },
-
             {
                 label: 'Evaluacion',
                 items: [
                     {
                         label: 'Evaluaciones',
-                        icon: 'pi pi-fw pi-receipt'
+                        icon: 'pi pi-fw pi-receipt',
+                        routerLink: ['/dashboard/evaluaciones']
+
                     }
                 ]
             },

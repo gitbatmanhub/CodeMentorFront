@@ -13,6 +13,7 @@ import { Proyectos } from '@/pages/empty/proyectos';
 import { ProfileComponent } from '@/pages/profile/profile';
 import { ChatComponent } from '@/pages/chat/chat.component';
 import { ChatProject } from '@/pages/chat/chat-project.component';
+import { Evaluaciones } from '@/pages/empty/evaluaciones';
 
 export const appRoutes: Routes = [
     {path: '', component: Landing},
@@ -28,6 +29,7 @@ export const appRoutes: Routes = [
             {path: 'free', component: Aprendizajelibre},
             {path: 'guia', component: Aprendizajeguiado},
             {path: 'proyectos', component: Proyectos },
+            {path: 'evaluaciones', component: Evaluaciones },
             {path: 'proyectos/:idProyecto', component: ChatProject },
             {path: 'perfil', component: ProfileComponent },
             {path: 'chat/:idTemaConversacion', component: ChatComponent },
