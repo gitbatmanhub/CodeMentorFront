@@ -94,6 +94,7 @@ export class AuthService {
 
 
     setLocalStorageForColab(res: BackendLoginResponse) {
+        console.log(res);
 
         const user: UserInterface = {
             fullName: res.fullName,

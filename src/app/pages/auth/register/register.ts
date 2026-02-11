@@ -1,30 +1,28 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
-import { AppFloatingConfigurator} from '@/layout/component/app.floatingconfigurator'
-import { AuthService } from '@/auth/services/auth';
+import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
+import { AuthService } from '../../../auth/services/auth';
 import { finalize } from 'rxjs/operators';
-import { Toast } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { NgIf } from '@angular/common';
+import { Message } from 'primeng/message';
 
 @Component({
-    selector: 'app-login',
+    selector: 'app-register',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, ReactiveFormsModule, Toast],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator, ReactiveFormsModule, NgIf, Message],
     template: `
         <app-floating-configurator />
-        <p-toast />
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
             <div class="flex flex-col items-center justify-center">
                 <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                     <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
                         <div class="text-center mb-8">
-
                             <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-8 w-16 shrink-0 mx-auto">
                                 <path
                                     fill-rule="evenodd"
@@ -42,61 +40,69 @@ import { MessageService } from 'primeng/api';
                                     />
                                 </g>
                             </svg>
-                            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Bienvenido a CodeMentor!</div>
-                            <span class="text-muted-color font-medium">Ingresa tus credenciales</span>
+                            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Bienvenido a Gestora!</div>
+                            <span class="text-muted-color font-medium">Registrate para continuar</span>
                         </div>
 
                         <div>
-                            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                                <label for="username" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
-                                <input pInputText id="username" formControlName="email" type="text" placeholder="Email" class="w-full md:w-[30rem] mb-8" />
+                            <form [formGroup]="loginRegister" (ngSubmit)="onSubmit()">
+                                <label for="fullName" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Nombre Completo</label>
+                                <input pInputText id="fullName" formControlName="fullName" type="text" placeholder="Nombre completo" class="w-full md:w-[30rem] mb-8" />
 
-                                <label for="password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Password</label>
-                                <p-password id="password" formControlName="password" placeholder="Contraseña" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
+                                <label for="email" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
+                                <input pInputText id="email" formControlName="email" type="text" placeholder="Email address" class="w-full md:w-[30rem] mb-8" />
 
-                                <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                                    <!--                                    <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>-->
+                                <label for="password" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
+                                <p-password id="password" formControlName="password" placeholder="Password" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
+
+                                <label for="password2" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Repetir Contraseña</label>
+                                <p-password id="password2" formControlName="password2" placeholder="Repetir Contraseña" [toggleMask]="true" styleClass="mb-4" [fluid]="true" [feedback]="false"></p-password>
+
+                                <div class="flex flex-col flex-wrap gap-1 mb-2">
+                                    <p-message *ngIf="loginRegister.hasError('passwordsDoNotMatch') && loginRegister.get('password2')?.touched" severity="error" variant="simple" size="small">Las contraseñas no coinciden </p-message>
                                 </div>
-                                <p-button type="submit" label="Ingresar" styleClass="w-full"></p-button>
+
+                                <p-button type="submit" label="Registrarse" styleClass="w-full"></p-button>
                             </form>
                         </div>
                         <div class="mt-2">
-                            <a routerLink="/auth/register" class="p-button w-full bg-sky-600">Registrarse</a>
+                            <a routerLink="/auth/login" class="p-button w-full bg-sky-600">Ingresar</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    `,
-    providers: [MessageService]
+    `
 })
-export class Login implements OnInit {
-    loginForm!: FormGroup;
+export class Register implements OnInit {
+    loginRegister!: FormGroup;
     loading = false;
     submitted = false;
     error = '';
     returnUrl: string = '';
     email: string = '';
     password: string = '';
+    password2: string = '';
     checked: boolean = false;
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private authService: AuthService,
-        private messageService: MessageService
-    ) {
-        if (!this.authService.currentUserValue) {
-            this.router.navigate(['/auth/login']);
-        }
-    }
+        private authService: AuthService
+    ) {}
 
     ngOnInit(): void {
-        this.loginForm = this.formBuilder.group({
-            email: ['', [Validators.required]],
-            password: ['', Validators.required]
-        });
+        // Definición del formulario reactivo
+        this.loginRegister = this.formBuilder.group(
+            {
+                email: ['', [Validators.required]],
+                password: ['', Validators.required],
+                password2: ['', Validators.required],
+                fullName: ['', [Validators.required]]
+            },
+            { validators: this.passwordMatchValidator() }
+        );
 
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     }
@@ -105,7 +111,7 @@ export class Login implements OnInit {
         this.submitted = true;
         this.error = '';
 
-        if (this.loginForm.invalid) {
+        if (this.loginRegister.invalid) {
             return;
         }
 
@@ -113,7 +119,7 @@ export class Login implements OnInit {
 
         // Llamada al servicio de autenticación
         this.authService
-            .login(this.loginForm.value)
+            .register(this.loginRegister.value)
             .pipe(finalize(() => (this.loading = false)))
             .subscribe({
                 next: (response: { token: any }) => {
@@ -123,13 +129,18 @@ export class Login implements OnInit {
                         this.error = 'Register failed. Invalid response from server.';
                     }
                 },
-                error: (err: any) => {
-                    this.show(err.error.message, 'error');
+                error: (err: { error: { message: string } }) => {
+                    this.error = err.error?.message || 'Ocurrió un error inesperado al iniciar sesión.';
+                    console.error('Register error:', err);
                 }
             });
     }
 
-    show(message: string, severity: string) {
-        this.messageService.add({ severity: `${severity}`, summary: 'Info', detail: `${message}`, life: 3000 });
+    passwordMatchValidator(): ValidatorFn {
+        return (formGroup: AbstractControl): ValidationErrors | null => {
+            const password = formGroup.get('password')?.value;
+            const password2 = formGroup.get('password2')?.value;
+            return password === password2 ? null : { passwordsDoNotMatch: true };
+        };
     }
 }
