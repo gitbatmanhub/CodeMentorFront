@@ -42,7 +42,7 @@ interface ChatMessage {
                         </ng-template>
 
                         <ng-template #end>
-                            <p-button icon="pi pi-download" severity="secondary" [text]="true" />
+<!--                            <p-button icon="pi pi-download" severity="secondary" [text]="true" />-->
                         </ng-template>
                     </p-toolbar>
                 </div>

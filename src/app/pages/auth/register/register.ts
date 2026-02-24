@@ -40,7 +40,7 @@ import { Message } from 'primeng/message';
                                     />
                                 </g>
                             </svg>
-                            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Bienvenido a Gestora!</div>
+                            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Bienvenido a Codementor!</div>
                             <span class="text-muted-color font-medium">Registrate para continuar</span>
                         </div>
 
