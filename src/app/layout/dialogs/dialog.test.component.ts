@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -93,7 +93,7 @@ export interface RespuestaInterface {
 
                                         <div class="flex justify-between mt-4">
                                             <p-button label="Atrás" severity="secondary" (onClick)="prevStep(activateCallback)"></p-button>
-                                            <p-button label="Finalizar Label" severity="success" icon="pi pi-check" (onClick)="finishTest()"></p-button>
+                                            <p-button label="Finalizar" severity="success" [loading]="loading()" icon="pi pi-check" (onClick)="finishTest()"></p-button>
                                         </div>
                                     </div>
                                 </ng-template>
@@ -146,6 +146,7 @@ export interface RespuestaInterface {
 })
 export class DialogTestComponent implements OnInit {
     testData!: TestInterface;
+    loading = signal(false);
     idUnidad: string = '';
     testForm: FormGroup = new FormGroup({});
     currentStep: number = 1;
@@ -216,6 +217,7 @@ export class DialogTestComponent implements OnInit {
     }
 
     finishTest() {
+        this.loading.set(true);
         this.evaluando = true;
 
         if (this.testForm.valid) {
